@@ -32,11 +32,12 @@ const InventoryApp = () => {
     category: '',
     quantity: '',
     minStock: '',
-    supplier: '',
     area: '',
     unit: '',
     batch: '',
-    price: '',
+    palletType: '',
+    palletQuantity: '',
+    image: null,
     notes: ''
   });
 
@@ -79,6 +80,21 @@ const InventoryApp = () => {
     });
   }
 
+  const handleMoveProduct = (id, targetArea) => {
+    setProducts(products.map(product => 
+      product.id === id 
+        ? { ...product, area: targetArea, lastUpdated: new Date().toISOString() }
+        : product
+    ));
+    
+    const areaName = targetArea === STORAGE_AREAS.PRODUCTION ? 'Produção' : 'Armazenamento';
+    toast({
+      title: "Item movimentado!",
+      description: `Item movido para ${areaName}`,
+      type: "success"
+    });
+  };
+
   const handleAddProduct = () => {
     const now = new Date();
     const newProduct = {
@@ -86,7 +102,7 @@ const InventoryApp = () => {
       id: Date.now(),
       quantity: parseInt(formData.quantity),
       minStock: parseInt(formData.minStock),
-      price: formData.price ? parseFloat(formData.price) : 0,
+      palletQuantity: formData.palletQuantity ? parseInt(formData.palletQuantity) : 0,
       addedAt: now.toISOString(),
       addedDate: now.toLocaleDateString('pt-BR'),
       addedTime: now.toLocaleTimeString('pt-BR'),
@@ -99,11 +115,12 @@ const InventoryApp = () => {
       category: '',
       quantity: '',
       minStock: '',
-      supplier: '',
       area: '',
       unit: '',
       batch: '',
-      price: '',
+      palletType: '',
+      palletQuantity: '',
+      image: null,
       notes: ''
     });
     toast({

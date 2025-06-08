@@ -41,15 +41,7 @@ export const ProductForm = ({
       newErrors.minStock = 'Estoque mínimo não pode ser maior que a quantidade atual';
     }
     
-    if (!formData.supplier.trim()) {
-      newErrors.supplier = 'Fornecedor é obrigatório';
-    } else if (formData.supplier.trim().length < 2) {
-      newErrors.supplier = 'Nome do fornecedor deve ter pelo menos 2 caracteres';
-    }
-    
-    if (!formData.batch.trim()) {
-      newErrors.batch = 'Número do lote é obrigatório';
-    }
+    // Número do lote não é mais obrigatório
     
     if (!formData.unit.trim()) {
       newErrors.unit = 'Unidade é obrigatória';
@@ -104,14 +96,9 @@ export const ProductForm = ({
         }
         break;
         
-      case 'supplier':
-        if (!value.trim()) {
-          newErrors.supplier = 'Fornecedor é obrigatório';
-        } else if (value.trim().length < 2) {
-          newErrors.supplier = 'Nome muito curto';
-        } else {
-          newErrors.supplier = '';
-        }
+      case 'batch':
+        // Lote não é mais obrigatório
+        newErrors.batch = '';
         break;
         
       case 'expirationDate':
@@ -262,45 +249,59 @@ export const ProductForm = ({
             {errors.minStock && <p className="text-red-400 text-sm mt-1">{errors.minStock}</p>}
           </div>
 
-          <div>
-            <input
-              name="supplier"
-              type="text"
-              placeholder="Fornecedor *"
-              value={formData.supplier}
-              onChange={handleChange}
-              onBlur={(e) => validateField('supplier', e.target.value)}
-              className={`px-4 py-3 bg-slate-800/50 border ${errors.supplier ? 'border-red-500' : 'border-slate-600'} rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full`}
-            />
-            {errors.supplier && <p className="text-red-400 text-sm mt-1">{errors.supplier}</p>}
-          </div>
-
+          {/* Campo Lote (opcional) */}
           <div>
             <input
               name="batch"
               type="text"
-              placeholder="Número do Lote *"
+              placeholder="Número do Lote (opcional)"
               value={formData.batch}
               onChange={handleChange}
-              onBlur={(e) => validateField('batch', e.target.value)}
-              className={`px-4 py-3 bg-slate-800/50 border ${errors.batch ? 'border-red-500' : 'border-slate-600'} rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full`}
+              className={`px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full`}
             />
-            {errors.batch && <p className="text-red-400 text-sm mt-1">{errors.batch}</p>}
           </div>
 
-          {/* Campo Preço */}
+          {/* Campo Pallet */}
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <select
+                name="palletType"
+                value={formData.palletType || ''}
+                onChange={handleChange}
+                className={`px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full`}
+              >
+                <option value="">Selecione o pallet (opcional)</option>
+                <option value="tampa">Tampa</option>
+                <option value="pote">Pote</option>
+                <option value="caixas">Caixas</option>
+                <option value="materia-prima">Matéria Prima</option>
+                <option value="insumos">Insumos</option>
+              </select>
+            </div>
+            <div>
+              <input
+                name="palletQuantity"
+                type="number"
+                min="0"
+                placeholder="Qtd"
+                value={formData.palletQuantity || ''}
+                onChange={handleChange}
+                className={`w-24 px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500`}
+              />
+            </div>
+          </div>
+
+          {/* Campo Imagem */}
           <div>
+            <label className="block text-slate-400 text-sm mb-2">Imagem do produto (opcional)</label>
             <input
-              name="price"
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder="Preço unitário (R$)"
-              value={formData.price || ''}
+              name="image"
+              type="file"
+              accept="image/*"
+              capture="environment"
               onChange={handleChange}
-              className={`px-4 py-3 bg-slate-800/50 border ${errors.price ? 'border-red-500' : 'border-slate-600'} rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full`}
+              className={`px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-500 file:text-white hover:file:bg-emerald-600`}
             />
-            {errors.price && <p className="text-red-400 text-sm mt-1">{errors.price}</p>}
           </div>
 
           {/* Campo Observações */}
@@ -343,11 +344,13 @@ ProductForm.propTypes = {
     category: PropTypes.string.isRequired,
     quantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     minStock: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    supplier: PropTypes.string.isRequired,
     area: PropTypes.string.isRequired,
     unit: PropTypes.string.isRequired,
-    batch: PropTypes.string.isRequired,
-    expirationDate: PropTypes.string
+    batch: PropTypes.string,
+    palletType: PropTypes.string,
+    palletQuantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    image: PropTypes.object,
+    notes: PropTypes.string
   }).isRequired,
   setFormData: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
