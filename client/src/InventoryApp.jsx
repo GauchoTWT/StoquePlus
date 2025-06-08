@@ -36,7 +36,8 @@ const InventoryApp = () => {
     area: '',
     unit: '',
     batch: '',
-    expirationDate: ''
+    price: '',
+    notes: ''
   });
 
   useEffect(() => {
@@ -79,12 +80,17 @@ const InventoryApp = () => {
   }
 
   const handleAddProduct = () => {
+    const now = new Date();
     const newProduct = {
       ...formData,
       id: Date.now(),
       quantity: parseInt(formData.quantity),
       minStock: parseInt(formData.minStock),
-      lastUpdated: new Date().toISOString(),
+      price: formData.price ? parseFloat(formData.price) : 0,
+      addedAt: now.toISOString(),
+      addedDate: now.toLocaleDateString('pt-BR'),
+      addedTime: now.toLocaleTimeString('pt-BR'),
+      lastUpdated: now.toISOString(),
     };
     setProducts([...products, newProduct]);
     setShowAddForm(false);
@@ -97,11 +103,12 @@ const InventoryApp = () => {
       area: '',
       unit: '',
       batch: '',
-      expirationDate: ''
+      price: '',
+      notes: ''
     });
     toast({
       title: "Item adicionado!",
-      description: "Novo item inserido no estoque.",
+      description: `Adicionado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR')}`,
       type: "success"
     });
   };
@@ -243,7 +250,8 @@ const InventoryApp = () => {
                   <th className="px-6 py-4 text-left text-slate-300 font-semibold">Item</th>
                   <th className="px-6 py-4 text-left text-slate-300 font-semibold">Categoria</th>
                   <th className="px-6 py-4 text-left text-slate-300 font-semibold">Quantidade</th>
-                  <th className="px-6 py-4 text-left text-slate-300 font-semibold">Lote</th>
+                  <th className="px-6 py-4 text-left text-slate-300 font-semibold">Preço</th>
+                  <th className="px-6 py-4 text-left text-slate-300 font-semibold">Adicionado em</th>
                   <th className="px-6 py-4 text-left text-slate-300 font-semibold">Status</th>
                   <th className="px-6 py-4 text-left text-slate-300 font-semibold">Ações</th>
                 </tr>
@@ -275,7 +283,15 @@ const InventoryApp = () => {
                         <span className="text-slate-400 text-sm">{product.unit}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-slate-300">{product.batch}</td>
+                    <td className="px-6 py-4 text-slate-300">
+                      {product.price ? `R$ ${product.price.toFixed(2)}` : 'N/A'}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-slate-300">
+                        <div className="text-sm">{product.addedDate || 'N/A'}</div>
+                        <div className="text-xs text-slate-400">{product.addedTime || ''}</div>
+                      </div>
+                    </td>
                     <td className="px-6 py-4">
                       {product.quantity <= product.minStock ? (
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30">
@@ -352,10 +368,30 @@ const InventoryApp = () => {
                     <span className="text-slate-400 text-sm">Lote:</span>
                     <p className="text-white">{selectedProduct.batch}</p>
                   </div>
-                  {selectedProduct.expirationDate && (
+                  <div>
+                    <span className="text-slate-400 text-sm">Quantidade:</span>
+                    <p className="text-white">{selectedProduct.quantity} {selectedProduct.unit}</p>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 text-sm">Estoque Mínimo:</span>
+                    <p className="text-white">{selectedProduct.minStock} {selectedProduct.unit}</p>
+                  </div>
+                  {selectedProduct.price && (
                     <div>
-                      <span className="text-slate-400 text-sm">Validade:</span>
-                      <p className="text-white">{new Date(selectedProduct.expirationDate).toLocaleDateString()}</p>
+                      <span className="text-slate-400 text-sm">Preço Unitário:</span>
+                      <p className="text-white">R$ {selectedProduct.price.toFixed(2)}</p>
+                    </div>
+                  )}
+                  {selectedProduct.addedDate && (
+                    <div>
+                      <span className="text-slate-400 text-sm">Adicionado em:</span>
+                      <p className="text-white">{selectedProduct.addedDate} às {selectedProduct.addedTime}</p>
+                    </div>
+                  )}
+                  {selectedProduct.notes && (
+                    <div>
+                      <span className="text-slate-400 text-sm">Observações:</span>
+                      <p className="text-white">{selectedProduct.notes}</p>
                     </div>
                   )}
                 </div>

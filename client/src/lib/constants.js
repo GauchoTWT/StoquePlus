@@ -24,8 +24,11 @@ export const SAMPLE_PRODUCTS = [
     area: "production",
     unit: "L",
     batch: "ARG2024001",
-    expirationDate: "2025-12-31",
-    lastUpdated: new Date().toISOString()
+    addedAt: new Date('2024-12-05T09:30:00').toISOString(),
+    addedDate: '05/12/2024',
+    addedTime: '09:30:00',
+    lastUpdated: new Date().toISOString(),
+    notes: "Óleo puro, orgânico certificado"
   },
   {
     id: 2,
@@ -38,7 +41,11 @@ export const SAMPLE_PRODUCTS = [
     area: "warehouse",
     unit: "un",
     batch: "FRS2024001",
-    lastUpdated: new Date().toISOString()
+    addedAt: new Date('2024-12-04T14:15:00').toISOString(),
+    addedDate: '04/12/2024',
+    addedTime: '14:15:00',
+    lastUpdated: new Date().toISOString(),
+    notes: "Vidro âmbar com tampa rosca"
   },
   {
     id: 3,
@@ -51,7 +58,11 @@ export const SAMPLE_PRODUCTS = [
     area: "warehouse",
     unit: "un",
     batch: "EPI2024001",
-    lastUpdated: new Date().toISOString()
+    addedAt: new Date('2024-12-03T16:45:00').toISOString(),
+    addedDate: '03/12/2024',
+    addedTime: '16:45:00',
+    lastUpdated: new Date().toISOString(),
+    notes: "Proteção respiratória PFF2"
   },
   {
     id: 4,
@@ -64,7 +75,10 @@ export const SAMPLE_PRODUCTS = [
     area: "production",
     unit: "L",
     batch: "LAV2024001",
-    expirationDate: "2025-06-30",
-    lastUpdated: new Date().toISOString()
+    addedAt: new Date('2024-12-02T11:20:00').toISOString(),
+    addedDate: '02/12/2024',
+    addedTime: '11:20:00',
+    lastUpdated: new Date().toISOString(),
+    notes: "Essência natural francesa concentrada"
   }
 ];

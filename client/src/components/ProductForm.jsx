@@ -288,20 +288,32 @@ export const ProductForm = ({
             {errors.batch && <p className="text-red-400 text-sm mt-1">{errors.batch}</p>}
           </div>
 
-          {formData.category === PRODUCT_CATEGORIES.RAW_MATERIALS && (
-            <div>
-              <label className="block text-slate-400 text-sm mb-1">Data de Validade</label>
-              <input
-                name="expirationDate"
-                type="date"
-                value={formData.expirationDate}
-                onChange={handleChange}
-                onBlur={(e) => validateField('expirationDate', e.target.value)}
-                className={`px-4 py-3 bg-slate-800/50 border ${errors.expirationDate ? 'border-red-500' : 'border-slate-600'} rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full`}
-              />
-              {errors.expirationDate && <p className="text-red-400 text-sm mt-1">{errors.expirationDate}</p>}
-            </div>
-          )}
+          {/* Campo Preço */}
+          <div>
+            <input
+              name="price"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="Preço unitário (R$)"
+              value={formData.price || ''}
+              onChange={handleChange}
+              className={`px-4 py-3 bg-slate-800/50 border ${errors.price ? 'border-red-500' : 'border-slate-600'} rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full`}
+            />
+            {errors.price && <p className="text-red-400 text-sm mt-1">{errors.price}</p>}
+          </div>
+
+          {/* Campo Observações */}
+          <div className="md:col-span-2">
+            <textarea
+              name="notes"
+              placeholder="Observações (opcional)"
+              value={formData.notes || ''}
+              onChange={handleChange}
+              rows={3}
+              className={`px-4 py-3 bg-slate-800/50 border ${errors.notes ? 'border-red-500' : 'border-slate-600'} rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full resize-none`}
+            />
+          </div>
         </div>
         
         <div className="flex gap-4 mt-6">
