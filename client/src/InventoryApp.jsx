@@ -17,7 +17,8 @@ import {
   BarChart3,
   Calendar,
   Eye,
-  Trash2
+  Trash2,
+  ArrowRightLeft
 } from 'lucide-react';
 import { STORAGE_AREAS, PRODUCT_CATEGORIES, SAMPLE_PRODUCTS } from './lib/constants';
 
@@ -134,7 +135,8 @@ const InventoryApp = () => {
     product.area === selectedArea &&
     (product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.supplier.toLowerCase().includes(searchTerm.toLowerCase()))
+    (product.batch && product.batch.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (product.palletType && product.palletType.toLowerCase().includes(searchTerm.toLowerCase())))
   );
 
   const areaProducts = products.filter(product => product.area === selectedArea);
@@ -222,7 +224,7 @@ const InventoryApp = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
             <input
               type="text"
-              placeholder="Buscar por nome, categoria ou fornecedor..."
+              placeholder="Buscar por nome, categoria, lote ou pallet..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
@@ -267,7 +269,7 @@ const InventoryApp = () => {
                   <th className="px-6 py-4 text-left text-slate-300 font-semibold">Item</th>
                   <th className="px-6 py-4 text-left text-slate-300 font-semibold">Categoria</th>
                   <th className="px-6 py-4 text-left text-slate-300 font-semibold">Quantidade</th>
-                  <th className="px-6 py-4 text-left text-slate-300 font-semibold">Preço</th>
+                  <th className="px-6 py-4 text-left text-slate-300 font-semibold">Pallet</th>
                   <th className="px-6 py-4 text-left text-slate-300 font-semibold">Adicionado em</th>
                   <th className="px-6 py-4 text-left text-slate-300 font-semibold">Status</th>
                   <th className="px-6 py-4 text-left text-slate-300 font-semibold">Ações</th>
@@ -285,7 +287,7 @@ const InventoryApp = () => {
                     <td className="px-6 py-4">
                       <div>
                         <p className="text-white font-medium">{product.name}</p>
-                        <p className="text-slate-400 text-sm">{product.supplier}</p>
+                        <p className="text-slate-400 text-sm">{product.batch || 'Sem lote'}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-slate-300">{product.category}</td>
@@ -301,7 +303,7 @@ const InventoryApp = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-slate-300">
-                      {product.price ? `R$ ${product.price.toFixed(2)}` : 'N/A'}
+                      {product.palletType ? `${product.palletType}${product.palletQuantity ? ` (${product.palletQuantity})` : ''}` : 'N/A'}
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-slate-300">
@@ -329,14 +331,30 @@ const InventoryApp = () => {
                           variant="ghost"
                           onClick={() => setSelectedProduct(product)}
                           className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20"
+                          title="Ver detalhes"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
                           variant="ghost"
+                          onClick={() => handleMoveProduct(
+                            product.id, 
+                            product.area === STORAGE_AREAS.PRODUCTION 
+                              ? STORAGE_AREAS.WAREHOUSE 
+                              : STORAGE_AREAS.PRODUCTION
+                          )}
+                          className="text-green-400 hover:text-green-300 hover:bg-green-500/20"
+                          title={`Mover para ${product.area === STORAGE_AREAS.PRODUCTION ? 'Armazenamento' : 'Produção'}`}
+                        >
+                          <ArrowRightLeft className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
                           onClick={() => handleDeleteProduct(product.id)}
                           className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                          title="Excluir item"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -378,13 +396,15 @@ const InventoryApp = () => {
                     <p className="text-white">{selectedProduct.category}</p>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-sm">Fornecedor:</span>
-                    <p className="text-white">{selectedProduct.supplier}</p>
+                    <span className="text-slate-400 text-sm">Área:</span>
+                    <p className="text-white">{selectedProduct.area === STORAGE_AREAS.PRODUCTION ? 'Produção' : 'Armazenamento'}</p>
                   </div>
-                  <div>
-                    <span className="text-slate-400 text-sm">Lote:</span>
-                    <p className="text-white">{selectedProduct.batch}</p>
-                  </div>
+                  {selectedProduct.batch && (
+                    <div>
+                      <span className="text-slate-400 text-sm">Lote:</span>
+                      <p className="text-white">{selectedProduct.batch}</p>
+                    </div>
+                  )}
                   <div>
                     <span className="text-slate-400 text-sm">Quantidade:</span>
                     <p className="text-white">{selectedProduct.quantity} {selectedProduct.unit}</p>
@@ -393,10 +413,10 @@ const InventoryApp = () => {
                     <span className="text-slate-400 text-sm">Estoque Mínimo:</span>
                     <p className="text-white">{selectedProduct.minStock} {selectedProduct.unit}</p>
                   </div>
-                  {selectedProduct.price && (
+                  {selectedProduct.palletType && (
                     <div>
-                      <span className="text-slate-400 text-sm">Preço Unitário:</span>
-                      <p className="text-white">R$ {selectedProduct.price.toFixed(2)}</p>
+                      <span className="text-slate-400 text-sm">Pallet:</span>
+                      <p className="text-white">{selectedProduct.palletType} {selectedProduct.palletQuantity && `(${selectedProduct.palletQuantity})`}</p>
                     </div>
                   )}
                   {selectedProduct.addedDate && (
